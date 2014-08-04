@@ -13,6 +13,31 @@ module Trello
         client.find(:organization, id, params)
       end
     end
+    
+    def save
+      return update! if id
+
+      fields = { :displayName => display_name }
+      fields.merge!(:name => name) if name
+      fields.merge!(:description => description) if description
+      fields.merge!(:url => url) if url
+
+      client.post("/organizations", fields).json_into(self)
+    end
+
+    def update!
+      fail "Cannot save new instance." unless self.id
+
+      @previously_changed = changes
+      @changed_attributes.clear
+
+      client.put("/organizations/#{self.id}/", {
+        :name        => attributes[:name],
+        :displayName => attributes[:display_name],
+        :description => attributes[:description],
+        :url         =>  attributes[:url]
+      }).json_into(self)
+    end
 
     # Update the fields of an organization.
     #
