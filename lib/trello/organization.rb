@@ -1,8 +1,8 @@
 module Trello
   # Organizations are useful for linking members together.
   class Organization < BasicData
-    register_attributes :id, :name, :display_name, :description, :url,
-      :readonly => [ :id, :name, :display_name, :description, :url ]
+    register_attributes :id, :name, :display_name, :description, :website,
+      :readonly => [ :id ]
     validates_presence_of :id, :name
 
     include HasActions
@@ -20,7 +20,7 @@ module Trello
       fields = { :displayName => display_name }
       fields.merge!(:name => name) if name
       fields.merge!(:description => description) if description
-      fields.merge!(:url => url) if url
+      fields.merge!(:website => website) if website
 
       client.post("/organizations", fields).json_into(self)
     end
@@ -34,8 +34,8 @@ module Trello
       client.put("/organizations/#{self.id}/", {
         :name        => attributes[:name],
         :displayName => attributes[:display_name],
-        :description => attributes[:description],
-        :url         =>  attributes[:url]
+        :desc => attributes[:description],
+        :website     =>  attributes[:website]
       }).json_into(self)
     end
 
@@ -47,8 +47,8 @@ module Trello
       attributes[:id]           = fields['id']
       attributes[:name]         = fields['name']
       attributes[:display_name] = fields['displayName']
-      attributes[:description]  = fields['description']
-      attributes[:url]          = fields['url']
+      attributes[:description]  = fields['desc']
+      attributes[:website]          = fields['website']
       self
     end
 
